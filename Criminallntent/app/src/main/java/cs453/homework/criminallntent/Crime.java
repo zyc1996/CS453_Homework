@@ -14,35 +14,31 @@ public class Crime {
         mDate = new Date();
     }
 
-    public UUID getmId() {
+    public UUID getID() {
         return mId;
     }
 
-    public void setmId(UUID mId) {
-        this.mId = mId;
-    }
-
-    public String getmTitle() {
+    public String getTitle() {
         return mTitle;
     }
 
-    public void setmTitle(String mTitle) {
+    public void setTitle(String mTitle) {
         this.mTitle = mTitle;
     }
 
-    public Date getmDate() {
+    public Date getDate() {
         return mDate;
     }
 
-    public void setmDate(Date mDate) {
+    public void setDate(Date mDate) {
         this.mDate = mDate;
     }
 
-    public boolean ismSolved() {
+    public boolean isSolved() {
         return mSolved;
     }
 
-    public void setmSolved(boolean mSolved) {
+    public void setSolved(boolean mSolved) {
         this.mSolved = mSolved;
     }
 }
