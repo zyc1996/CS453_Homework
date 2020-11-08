@@ -41,6 +41,7 @@ public class CrimeFragment extends Fragment {
     private static final int REQUEST_CONTACT = 1;
     private static final int REQUEST_PHOTO = 2;
     private static final String DIALOG_DATE = "DialogDate";
+    private static final String DIALOG_ZOOM = "DialogZoom";
     private Crime mCrime;
     private EditText mTitleField;
     private Button mDateButton;
@@ -150,6 +151,15 @@ public class CrimeFragment extends Fragment {
 
         final Intent captureImage = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         boolean canTakePhoto = mPhotoFile != null && captureImage.resolveActivity(pm) != null;
+
+        mPhotoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getFragmentManager();
+                ZoomPhotoFragment dialog = new ZoomPhotoFragment().newInstance(mPhotoFile);
+                dialog.show(fm,DIALOG_ZOOM);
+            }
+        });
 
         mPhotoButton.setOnClickListener(new View.OnClickListener() {
             @Override
