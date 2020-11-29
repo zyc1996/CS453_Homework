@@ -15,11 +15,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.SearchView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +42,7 @@ public class PhotoGalleryFragment extends Fragment {
 
         setRetainInstance(true);
 
-        new FetchItemsTask().execute();
+        updateItems();
 
         setHasOptionsMenu(true);
 
@@ -65,7 +67,50 @@ public class PhotoGalleryFragment extends Fragment {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.fragment_photo_gallery_menu, menu);
 
-        MenuItem searchItem = menu.findItem(R.id.menu_item_search);
+        final MenuItem searchItem = menu.findItem(R.id.menu_item_search);
+
+        final SearchView searchView = (SearchView) searchItem.getActionView();
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                Log.d(TAG, "QueryTextSubmit: " + s);
+                updateItems();
+                QueryPreferences.setStoredQuery(getActivity(),s);
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                Log.d(TAG, "QueryTextSubmit: " + s);
+                return false;
+            }
+        });
+
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String query = QueryPreferences.getStoredQuery(getActivity());
+                searchView.setQuery(query,false);
+            }
+        });
+    }
+
+    private void updateItems(){
+        String query = QueryPreferences.getStoredQuery(getActivity());
+        new FetchItemsTask(query).execute();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_item_clear:
+                QueryPreferences.setStoredQuery(getActivity(),null);;
+                updateItems();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     @Override
@@ -92,9 +137,12 @@ public class PhotoGalleryFragment extends Fragment {
     }
 
     private class FetchItemsTask extends AsyncTask<Void, Void, List<GalleryItem>>{
+        private String query;
+        public FetchItemsTask(String query){
+            this.query = query;
+        }
         @Override
         protected List<GalleryItem> doInBackground(Void... params) {
-            String query = "robot";
             if(query == null){
                 return new FlickrFetchr().fetchRecentPhotos();
             }else{
